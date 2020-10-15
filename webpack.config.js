@@ -1,65 +1,14 @@
-const path = require("path");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { merge } = require("webpack-merge");
 
-module.exports = {
-  entry: {
-    app: [
-      path.resolve("./src/js/index.js"),
-      path.resolve("./src/styles/main.scss"),
-    ],
-  },
-  output: {
-    path: path.resolve("./target/"),
-    filename: "[name].js",
-  },
-  module: {
-    rules: [
-      {
-        test: /\.scss$/,
-        exclude: /\.shadow\.scss$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          require.resolve("css-loader"),
-          {
-            loader: require.resolve("postcss-loader"),
-            options: {
-              postcssOptions: {
-                plugins: [
-                  [
-                    require.resolve("postcss-preset-env"),
-                    {
-                      features: {
-                        "dir-pseudo-class": { dir: "ltr" },
-                      },
-                    },
-                  ],
-                  [
-                    require.resolve("cssnano"),
-                    {
-                      preset: [
-                        "default",
-                        {
-                          // Prevent conversion of colors to smallest representation, to avoid problems
-                          // when converting `rgba(255, 255, 255, opacity)` to `hsla(0,0%,100%, opacity)`.
-                          // The compressor in AEM strips the `%` from the `0%` saturation value,
-                          // resulting in an invalid property value.
-                          colormin: false,
-                        },
-                      ],
-                    },
-                  ],
-                ],
-              },
-            },
-          },
-          require.resolve("sass-loader"),
-        ],
-      },
-    ],
-  },
-  plugins: [
-    new MiniCssExtractPlugin({
-      filename: "css/[name].css",
-    }),
-  ],
-};
+const entryConfigModule = require("./config/webpack/base/settings/entry/module");
+const entryConfigLegacy = require("./config/webpack/base/settings/entry/legacy");
+
+const outputConfigModule = require("./config/webpack/base/settings/output/module");
+const outputConfigLegacy = require("./config/webpack/base/settings/output/legacy");
+
+const compileSCSS = require("./config/webpack/base/tasks/compileSCSS");
+
+module.exports = [
+  merge(entryConfigModule, outputConfigModule, compileSCSS),
+  merge(entryConfigLegacy, outputConfigLegacy, compileSCSS),
+];
