@@ -8,7 +8,11 @@ const outputConfigLegacy = require("./config/webpack/base/settings/output/legacy
 
 const compileSCSS = require("./config/webpack/base/tasks/compileSCSS");
 
+const basicSettings = require("./config/webpack/dev/settings/basicSettings");
+const devServerSettings = require("./config/webpack/dev/settings/devServerSettings");
+
+
 module.exports = [
-  merge(entryConfigModule, outputConfigModule, compileSCSS),
-  merge(entryConfigLegacy, outputConfigLegacy, compileSCSS),
+  merge(entryConfigModule, outputConfigModule, compileSCSS, devServerSettings, basicSettings),
+  merge(entryConfigLegacy, outputConfigLegacy, compileSCSS, devServerSettings, basicSettings),
 ];
